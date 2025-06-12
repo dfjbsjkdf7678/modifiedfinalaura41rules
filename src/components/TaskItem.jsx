@@ -44,12 +44,16 @@ const TaskItem = ({ task, collectionName, onUpdate }) => {
         const auraDates = generateAuraDates(new Date(task.createdAt), new Date(task.endDate));
         
         // Calculate what the current date should be based on user's current date
-        const newCurrentDate = updateTaskCurrentDate(task, userCurrentDate, auraDates);
+        const newCurrentDateResult = updateTaskCurrentDate(task, userCurrentDate, auraDates);
+        
+        // Convert string result to Date object if needed
+        const newCurrentDate = typeof newCurrentDateResult === 'string' 
+          ? dateManager.firestoreStringToDate(newCurrentDateResult)
+          : newCurrentDateResult;
         
         // If the calculated date is different from stored date, update it
         const storedCurrentDate = new Date(task.currentDate);
         storedCurrentDate.setHours(0, 0, 0, 0);
-        newCurrentDate.setHours(0, 0, 0, 0);
         
         if (newCurrentDate.getTime() !== storedCurrentDate.getTime()) {
           setIsUpdating(true);
